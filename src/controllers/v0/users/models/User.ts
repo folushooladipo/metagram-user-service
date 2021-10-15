@@ -18,6 +18,9 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
 
   @PrimaryKey
   @Column
+  public id!: string;
+
+  @Column
   public email!: string;
 
   @Column
