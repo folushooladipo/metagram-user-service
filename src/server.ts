@@ -2,13 +2,13 @@ import express, {json as parseJsonBody} from "express"
 import cors from "cors"
 
 import {IndexRouter} from "./controllers/v0/index.router"
-import {V0MODELS} from "./controllers/v0/model.index"
+import {V0_MODELS} from "./controllers/v0/model.index"
 import {sequelize} from "./sequelize"
 
-const DEFAULT_PORT = 8080;
+const DEFAULT_PORT = 8081;
 
 (async () => {
-  sequelize.addModels(V0MODELS)
+  sequelize.addModels(V0_MODELS)
   await sequelize.sync()
 
   const app = express()
@@ -17,11 +17,8 @@ const DEFAULT_PORT = 8080;
   app.use(parseJsonBody())
 
   const knownOrigins = [
-    "http://localhost:4200",
+    "http://localhost:8081",
   ]
-  if (process.env.ACTIVE_CLOUDFRONT_DISTRIBUTION) {
-    knownOrigins.push(process.env.ACTIVE_CLOUDFRONT_DISTRIBUTION)
-  }
   const corsOptions = {
     origin: (origin: string, callback: (err: Error, isKnownOrigin?: boolean) => void) => {
       if (knownOrigins.indexOf(origin) !== -1 || !origin) {

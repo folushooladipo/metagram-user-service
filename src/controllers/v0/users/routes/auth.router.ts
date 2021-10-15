@@ -140,10 +140,6 @@ router.post("/", async (req, res) => {
     })
 })
 
-router.get("/", (req, res) => {
-  res.send("auth")
-})
-
 router.post("/login", async (req, res) => {
   const {
     email,
@@ -212,6 +208,14 @@ export const requireAuth = (req: Request, res: Response, next: NextFunction): Re
 
 router.get("/verification", requireAuth, (req, res) => {
   return res.status(200).json({auth: true, message: "Authenticated."})
+})
+
+// TODO: add a GET /verify-token route that services can use to authenticate a user.
+
+router.get("/", (req, res) => {
+  res
+    .status(404)
+    .json({error: "Not implemented."})
 })
 
 export const AuthRouter: Router = router
