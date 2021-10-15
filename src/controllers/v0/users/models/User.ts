@@ -1,4 +1,4 @@
-import {Column, CreatedAt, Model, PrimaryKey, Table, UpdatedAt} from "sequelize-typescript"
+import {Column, CreatedAt, Model, Table, UpdatedAt} from "sequelize-typescript"
 
 interface UserAttributes {
   id: number;
@@ -15,11 +15,6 @@ interface UserCreationAttributes {
 
 @Table
 export class User extends Model<UserAttributes, UserCreationAttributes> {
-
-  @PrimaryKey
-  @Column
-  public id!: string;
-
   @Column
   public email!: string;
 

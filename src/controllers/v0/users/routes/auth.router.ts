@@ -95,7 +95,9 @@ router.post("/", async (req, res) => {
       .json({error: "Password is not strong enough. It must be 8 characters long and must contain at least two uppercase letters, two lowercase letters, two symbols/punctuation marks and two numeric characters."})
   }
 
-  const user = await User.findByPk(email)
+  const user = await User.findOne({
+    where: {email},
+  })
   if (user) {
     return res
       .status(422)
