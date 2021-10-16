@@ -160,7 +160,9 @@ router.post("/login", async (req, res) => {
     return res.status(400).json({auth: false, error: "Password is required."})
   }
 
-  const user = await User.findByPk(email)
+  const user = await User.findOne({
+    where: {email},
+  })
   if (!user) {
     return res.status(404).json({auth: false, error: "User not found."})
   }
