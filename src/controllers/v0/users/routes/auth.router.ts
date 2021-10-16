@@ -1,13 +1,11 @@
 import * as bcrypt from "bcrypt"
 import * as jwt from "jsonwebtoken"
-import {Request, Response, Router} from "express"
-import {NextFunction} from "connect"
+import {NextFunction, Request, Response, Router} from "express"
 import {validate as validateEmail} from "email-validator"
 
 import {User} from "../models/User"
-import {config as loadEnvironmentVariables} from "dotenv"
+import {config} from "../../../../config/config"
 
-loadEnvironmentVariables()
 const router: Router = Router()
 const secondsInOneWeek = 60 * 60 * 24 * 7
 
@@ -28,7 +26,7 @@ const generateJWT = (user: User): string => {
   const expiresIn = secondsSinceUnixEpoch + secondsInOneWeek
   const jwtToken = jwt.sign(
     payload,
-    process.env.JWT_SECRET,
+    config.jwtSecret,
     {
       expiresIn,
     }
@@ -202,7 +200,7 @@ export const requireAuth = (req: Request, res: Response, next: NextFunction): Re
 
   const token = bearerTokenParts[1]
 
-  jwt.verify(token, process.env.JWT_SECRET, (err) => {
+  jwt.verify(token, config.jwtSecret, (err) => {
     if (err) {
       return res.status(500).json({auth: false, error: "Failed to authenticate."})
     }

@@ -1,7 +1,9 @@
 import express, {json as parseJsonBody} from "express"
+import cors from "cors"
 
 import {IndexRouter} from "./controllers/v0/index.router"
 import {V0_MODELS} from "./controllers/v0/model.index"
+import {config} from "./config/config"
 import {sequelize} from "./sequelize"
 
 const DEFAULT_PORT = 8081;
@@ -11,9 +13,26 @@ const DEFAULT_PORT = 8081;
   await sequelize.sync()
 
   const app = express()
-  const port = process.env.PORT || DEFAULT_PORT
+  const port = config.port || DEFAULT_PORT
 
   app.use(parseJsonBody())
+
+  const knownOrigins: string[] = []
+  const {frontendUrl} = config
+  if (frontendUrl) {
+    knownOrigins.push(frontendUrl)
+  }
+  const corsOptions = {
+    origin: (origin: string, callback: (err: Error, isKnownOrigin?: boolean) => void) => {
+      if (knownOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true)
+      } else {
+        callback(new Error("Not allowed by CORS"))
+      }
+    },
+    optionsSuccessStatus: 200,
+  }
+  app.use(cors(corsOptions))
 
   app.use(function(req, res, next) {
     res.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization")
