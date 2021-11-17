@@ -107,7 +107,7 @@ router.post("/", async (req, res) => {
   const hashedPassword = getPasswordHash(plainTextPassword)
   const newUser = new User({
     email,
-    password_hash: hashedPassword,
+    passwordHash: hashedPassword,
   })
 
   let savedUser
@@ -167,7 +167,7 @@ router.post("/login", async (req, res) => {
     return res.status(404).json({auth: false, error: "User not found."})
   }
 
-  const authValid = comparePasswords(plainTextPassword, user.password_hash)
+  const authValid = comparePasswords(plainTextPassword, user.passwordHash)
   if (!authValid) {
     return res.status(401).json({auth: false, error: "Unauthorized."})
   }

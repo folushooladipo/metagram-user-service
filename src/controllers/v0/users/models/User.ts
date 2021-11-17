@@ -1,25 +1,29 @@
-import {Column, CreatedAt, Model, Table, UpdatedAt} from "sequelize-typescript"
+import {Column, CreatedAt, Model, PrimaryKey, Table, UpdatedAt} from "sequelize-typescript"
 
 interface UserAttributes {
   id: number;
   email: string;
-  password_hash: string;
+  passwordHash: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 interface UserCreationAttributes {
   email: string;
-  password_hash: string;
+  passwordHash: string;
 }
 
 @Table
 export class User extends Model<UserAttributes, UserCreationAttributes> {
+  @PrimaryKey
+  @Column
+  public id!: number;
+
   @Column
   public email!: string;
 
   @Column
-  public password_hash!: string; // for nullable fields
+  public passwordHash!: string;
 
   @Column
   @CreatedAt
