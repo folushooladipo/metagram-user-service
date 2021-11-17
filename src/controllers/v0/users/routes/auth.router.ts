@@ -1,8 +1,9 @@
-import * as bcrypt from "bcrypt"
-import * as jwt from "jsonwebtoken"
-import {NextFunction, Request, Response, Router} from "express"
+import {compareSync, hashSync} from "bcrypt"
+import {Router} from "express"
+import {sign as signJwt} from "jsonwebtoken"
 import {validate as validateEmail} from "email-validator"
 
+import {RequestWithTokenPayload, requireAuth} from "../../../../middleware"
 import {User} from "../models/User"
 import {config} from "../../../../config/config"
 
@@ -11,20 +12,21 @@ const secondsInOneWeek = 60 * 60 * 24 * 7
 
 const getPasswordHash = (plainTextPassword: string): string => {
   const saltingRounds = 10
-  return bcrypt.hashSync(plainTextPassword, saltingRounds)
+  return hashSync(plainTextPassword, saltingRounds)
 }
 
 const comparePasswords = (plainTextPassword: string, hashedPassword: string): boolean => {
-  return bcrypt.compareSync(plainTextPassword, hashedPassword)
+  return compareSync(plainTextPassword, hashedPassword)
 }
 
 const generateJWT = (user: User): string => {
   const payload = {
+    id: user.id,
     email: user.email,
   }
   const secondsSinceUnixEpoch = Math.floor(Date.now() / 1000)
   const expiresIn = secondsSinceUnixEpoch + secondsInOneWeek
-  const jwtToken = jwt.sign(
+  const jwtToken = signJwt(
     payload,
     config.jwtSecret,
     {
@@ -188,28 +190,9 @@ router.post("/login", async (req, res) => {
     })
 })
 
-export const requireAuth = (req: Request, res: Response, next: NextFunction): Response => {
-  if (!req.headers || !req.headers.authorization) {
-    return res.status(400).json({error: "No authorization headers were supplied."})
-  }
-
-  const bearerTokenParts = req.headers.authorization.split(" ")
-  if (bearerTokenParts.length !== 2) {
-    return res.status(400).json({error: "Malformed token."})
-  }
-
-  const token = bearerTokenParts[1]
-
-  jwt.verify(token, config.jwtSecret, (err) => {
-    if (err) {
-      return res.status(500).json({auth: false, error: "Failed to authenticate."})
-    }
-    return next()
-  })
-}
-
-router.get("/verify-token", requireAuth, (req, res) => {
-  return res.status(204).send()
+router.get("/verify-token", requireAuth, (req: RequestWithTokenPayload, res) => {
+  const {id, email} = req.tokenPayload
+  return res.status(200).json({id, email})
 })
 
 router.get("/", (req, res) => {
