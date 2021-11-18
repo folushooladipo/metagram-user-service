@@ -1,13 +1,14 @@
 import {Router} from "express"
 
-import {AuthRouter, requireAuth} from "./auth.router"
+import {RequestWithTokenPayload, requireAuth} from "../../../../middleware"
+import {AuthRouter} from "./auth.router"
 import {User} from "../models/User"
 
 const router: Router = Router()
 
 router.use("/auth", AuthRouter)
 
-router.get("/:id?", requireAuth, async (req, res) => {
+router.get("/:id?", requireAuth, async (req: RequestWithTokenPayload, res) => {
   const {id} = req.params
   if (!id) {
     res
