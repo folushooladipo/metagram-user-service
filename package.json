@@ -12,7 +12,8 @@
     "clean": "rimraf www/ || true",
     "tsc": "tsc",
     "build": "npm run clean && tsc && cp -rf src/config www/config && cp src/us-east-1-bundle.pem www/us-east-1-bundle.pem && cp .npmrc www/.npmrc",
-    "prod": "node www/server.js"
+    "prod": "node www/server.js",
+    "test": "echo 'No tests yet.' && exit 0"
   },
   "keywords": [],
   "author": "Gabriel Ruttner",
